@@ -1,5 +1,19 @@
 import { StorefrontLayout } from "@/components/StorefrontLayout";
+import { getCategoryPageData } from "@/lib/category-shoes";
+import { notFound } from "next/navigation";
 
-export default function ClassicsPage() {
-  return <StorefrontLayout activeLink="Classics" />;
+export default async function ClassicsPage() {
+  const data = await getCategoryPageData("classics");
+  if (!data) notFound();
+  return (
+    <StorefrontLayout
+      shoes={data.shoes}
+      reviewCountsByShoeId={data.reviewCountsByShoeId}
+      averageRatingByShoeId={data.averageRatingByShoeId}
+      variant="category"
+      categoryTitle={data.title}
+      categoryDescription={data.description}
+      breadcrumbLabel={data.breadcrumbLabel}
+    />
+  );
 }

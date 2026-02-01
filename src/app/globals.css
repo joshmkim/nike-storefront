@@ -26,6 +26,8 @@ body {
   min-height: 100%;
   margin: 0;
   overflow-x: hidden;
+  /* Stop scroll at top/bottom; no bounce or overscroll past header/footer */
+  overscroll-behavior: none;
 }
 
 body {
@@ -44,4 +46,8 @@ body {
 
 .font-poppins {
   font-family: var(--font-poppins), sans-serif;
+}
+
+.font-teko {
+  font-family: var(--font-teko), sans-serif;
 }

@@ -2,7 +2,9 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { useEffect, useState } from "react";
 import { HeartIcon, CartIcon, UserIcon } from "./icons";
+import { supabase } from "@/lib/supabase";
 
 export type NavLinkItem = { href: string; label: string };
 
@@ -22,12 +24,8 @@ export type NavBarProps = {
   links?: NavLinkItem[];
   /** Logo link href; defaults to "/". */
   logoHref?: string;
-  /** Optional cart count badge. */
+  /** Optional cart count badge (overrides fetched count when provided). */
   cartCount?: number;
-  /** Callbacks for action icons (wire up to router or state). */
-  onWishlistClick?: () => void;
-  onCartClick?: () => void;
-  onProfileClick?: () => void;
   className?: string;
 };
 
@@ -35,12 +33,40 @@ export function NavBar({
   activeLink,
   links = DEFAULT_LINKS,
   logoHref = "/",
-  cartCount,
-  onWishlistClick,
-  onCartClick,
-  onProfileClick,
+  cartCount: cartCountProp,
   className = "",
 }: NavBarProps) {
+  const [user, setUser] = useState<{ email?: string } | null>(null);
+  const [cartCount, setCartCount] = useState<number>(0);
+
+  useEffect(() => {
+    const load = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      setUser(session?.user ?? null);
+      if (session?.access_token) {
+        const res = await fetch("/api/cart", {
+          headers: { Authorization: `Bearer ${session.access_token}` },
+        });
+        if (res.ok) {
+          const items = await res.json();
+          const total = items.reduce((sum: number, i: { quantity?: number }) => sum + (i.quantity ?? 1), 0);
+          setCartCount(total);
+        } else {
+          setCartCount(0);
+        }
+      } else {
+        setCartCount(0);
+      }
+    };
+    load();
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(() => {
+      load();
+    });
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const displayCartCount = cartCountProp != null ? cartCountProp : cartCount;
+
   return (
     <nav
       className={`font-space-grotesk mx-auto flex h-[64.5px] w-[1354px] flex-none flex-row items-center gap-[752px] px-[43px] pb-[20px] pt-[20px] text-[16px] font-bold leading-[100%] tracking-normal text-[#181818] outline-none ${className}`}
@@ -84,38 +110,35 @@ export function NavBar({
       </div>
       {/* Icons: 24×24px each, gap 10px */}
       <div className="flex items-center gap-[10px]">
-        <button
-          type="button"
-          onClick={onWishlistClick}
-          aria-label="Wishlist"
+        <Link
+          href="/favorites"
+          aria-label="Wishlist / Favorites"
           className="flex h-6 w-6 items-center justify-center hover:opacity-80"
         >
           <HeartIcon className="h-6 w-6 fill-transparent stroke-neutral-700" />
-        </button>
-        <button
-          type="button"
-          onClick={onCartClick}
+        </Link>
+        <Link
+          href="/cart"
           aria-label="Cart"
           className="relative flex h-6 w-6 items-center justify-center hover:opacity-80"
         >
           <CartIcon className="h-6 w-6 text-neutral-700" />
-          {cartCount != null && cartCount > 0 && (
+          {displayCartCount > 0 && (
             <span
               className="absolute -right-2 -top-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-neutral-900 px-1 text-[10px] font-medium text-white"
               aria-hidden
             >
-              {cartCount > 99 ? "99+" : cartCount}
+              {displayCartCount > 99 ? "99+" : displayCartCount}
             </span>
           )}
-        </button>
-        <button
-          type="button"
-          onClick={onProfileClick}
-          aria-label="Profile"
+        </Link>
+        <Link
+          href={user ? "/profile" : "/login"}
+          aria-label={user ? "Profile" : "Log in"}
           className="flex h-6 w-6 items-center justify-center hover:opacity-80"
         >
           <UserIcon className="h-6 w-6 text-neutral-700" />
-        </button>
+        </Link>
       </div>
     </nav>
   );

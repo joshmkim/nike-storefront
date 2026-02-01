@@ -17,6 +17,8 @@ export interface Database {
           gender: string | null;
           age: string | null;
           msrp: number;
+          is_sport: boolean;
+          is_classic: boolean;
           created_at: string;
           updated_at: string;
         };
@@ -27,6 +29,8 @@ export interface Database {
           gender?: string | null;
           age?: string | null;
           msrp: number;
+          is_sport?: boolean;
+          is_classic?: boolean;
           created_at?: string;
           updated_at?: string;
         };
@@ -37,6 +41,8 @@ export interface Database {
           gender?: string | null;
           age?: string | null;
           msrp?: number;
+          is_sport?: boolean;
+          is_classic?: boolean;
           created_at?: string;
           updated_at?: string;
         };
@@ -48,6 +54,7 @@ export interface Database {
           size: string;
           color: string;
           quantity: number;
+          reserved_quantity: number;
           sale_percent: number;
           created_at: string;
           updated_at: string;
@@ -58,6 +65,7 @@ export interface Database {
           size: string;
           color: string;
           quantity?: number;
+          reserved_quantity?: number;
           sale_percent?: number;
           created_at?: string;
           updated_at?: string;
@@ -68,6 +76,7 @@ export interface Database {
           size?: string;
           color?: string;
           quantity?: number;
+          reserved_quantity?: number;
           sale_percent?: number;
           created_at?: string;
           updated_at?: string;
@@ -93,6 +102,64 @@ export interface Database {
           created_at?: string;
         };
       };
+      reviews: {
+        Row: {
+          id: string;
+          shoe_id: string;
+          user_id: string;
+          text: string | null;
+          rating: number;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          shoe_id: string;
+          user_id: string;
+          text: string;
+          rating: number;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          shoe_id?: string;
+          user_id?: string;
+          text?: string | null;
+          rating?: number;
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
+      cart_items: {
+        Row: {
+          id: string;
+          user_id: string;
+          shoe_id: string;
+          size: string;
+          color: string;
+          quantity: number;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          shoe_id: string;
+          size: string;
+          color: string;
+          quantity?: number;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          shoe_id?: string;
+          size?: string;
+          color?: string;
+          quantity?: number;
+          created_at?: string;
+        };
+      };
     };
     Views: Record<string, never>;
     Functions: Record<string, never>;
@@ -101,6 +168,26 @@ export interface Database {
 }
 
 export type Shoe = Database["public"]["Tables"]["shoes"]["Row"];
+
+/** Shoe with sale info from stock: min price across variants, and whether any variant is on sale. */
+export type ShoeWithSale = Shoe & { minPrice: number; onSale: boolean };
+
+/** Compute effective price from msrp and sale_percent (0–100). */
+export function salePrice(msrp: number, salePercent: number): number {
+  return Math.round(msrp * (1 - (salePercent ?? 0) / 100) * 100) / 100;
+}
+
+/** From a shoe's msrp and its stock rows (with sale_percent), compute minPrice and onSale. */
+export function shoeSaleFromStock(
+  msrp: number,
+  stock: { sale_percent?: number | null }[]
+): { minPrice: number; onSale: boolean } {
+  if (!stock?.length) return { minPrice: msrp, onSale: false };
+  const prices = stock.map((s) => salePrice(msrp, s.sale_percent ?? 0));
+  const minPrice = Math.min(...prices);
+  const onSale = stock.some((s) => (s.sale_percent ?? 0) > 0);
+  return { minPrice, onSale };
+}
 export type ShoeInsert = Database["public"]["Tables"]["shoes"]["Insert"];
 export type ShoeUpdate = Database["public"]["Tables"]["shoes"]["Update"];
 
@@ -110,3 +197,11 @@ export type StockUpdate = Database["public"]["Tables"]["stock"]["Update"];
 
 export type UserFavorite = Database["public"]["Tables"]["user_favorites"]["Row"];
 export type UserFavoriteInsert = Database["public"]["Tables"]["user_favorites"]["Insert"];
+
+export type Review = Database["public"]["Tables"]["reviews"]["Row"];
+export type ReviewInsert = Database["public"]["Tables"]["reviews"]["Insert"];
+export type ReviewUpdate = Database["public"]["Tables"]["reviews"]["Update"];
+
+export type CartItem = Database["public"]["Tables"]["cart_items"]["Row"];
+export type CartItemInsert = Database["public"]["Tables"]["cart_items"]["Insert"];
+export type CartItemUpdate = Database["public"]["Tables"]["cart_items"]["Update"];
