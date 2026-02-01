@@ -38,7 +38,7 @@ export function StorefrontLayout({
   return (
     <div className="flex min-h-screen w-full min-w-full flex-col overflow-x-hidden bg-[#f4f4f4] font-sans text-neutral-900">
       <div className="mx-auto flex w-full max-w-[1440px] flex-1 flex-col">
-        <header className="font-cabinet mb-[153px] flex min-h-[41px] w-full shrink-0 items-center justify-end gap-[10px] bg-[#4A4C6C] px-[596px] pb-[12px] pt-[12px]">
+        <header className="font-cabinet mb-[103px] flex min-h-[41px] w-full shrink-0 items-center justify-end gap-[10px] bg-[#4A4C6C] px-[596px] pb-[12px] pt-[12px]">
           <p className="whitespace-nowrap text-[14px] font-bold leading-[100%] tracking-normal text-[#FFFFFF]">
             New here? Save 20% with code: YR24
           </p>
@@ -48,7 +48,7 @@ export function StorefrontLayout({
 
         <div className="flex flex-1 flex-col">
           {customContent ? (
-            <div className="mx-auto w-full max-w-[1280px] border-b border-neutral-500 px-6 pb-12 pt-8">
+            <div className="mx-auto w-full max-w-[1280px] -mt-[18px] border-b border-neutral-500 px-6 pb-12 pt-0">
               {children}
             </div>
           ) : !isFavorites && !isCategory ? (
@@ -56,8 +56,8 @@ export function StorefrontLayout({
               <div
                 className="absolute left-0 top-0 z-0 font-teko uppercase"
                 style={{
-                  paddingLeft: "341px",
-                  paddingTop: "249px",
+                  paddingLeft: "441px",
+                  paddingTop: "189px",
                   fontWeight: 400,
                   fontSize: "24px",
                   lineHeight: "100px",
@@ -70,8 +70,8 @@ export function StorefrontLayout({
               <div
                 className="absolute left-0 top-0 z-0 font-teko uppercase"
                 style={{
-                  paddingLeft: "1008px",
-                  paddingTop: "581px",
+                  paddingLeft: "1083px",
+                  paddingTop: "706px",
                   fontWeight: 400,
                   fontSize: "24px",
                   lineHeight: "100px",
@@ -91,7 +91,7 @@ export function StorefrontLayout({
                     lineHeight: "100%",
                     letterSpacing: "0%",
                     marginLeft: "50px",
-                    marginTop: "100px",
+                    marginTop: "50px",
                   }}
                 >
                   SHOP ALL
@@ -257,28 +257,61 @@ export function StorefrontLayout({
           </section>
         </div>
 
-        <footer className="mt-auto flex min-h-[451px] w-full max-w-[1440px] shrink-0 flex-col gap-[43px] bg-[#333333] px-[144px] pb-[35px] pt-[58px] text-white">
-          <div>
-            <p className="text-xl font-bold">Logo</p>
-            <p className="mt-3 text-sm text-neutral-300">Address: USA, California</p>
-            <p className="text-sm text-neutral-300">Contact: 1800 123 4567</p>
-            <p className="text-sm text-neutral-300">lavaria.xyz@gmail.com</p>
-            <div className="mt-4 flex gap-4">
-              <a href="#" aria-label="Facebook">
-                <SocialIcon className="h-5 w-5 text-neutral-400 hover:text-white" />
+        <footer className="relative left-1/2 mt-auto h-[451px] w-screen -translate-x-1/2 shrink-0 bg-[#333333]">
+          <div
+            className="absolute font-cabinet text-white"
+            style={{ top: "58px", left: "144px" }}
+          >
+            <Image
+              src="/assets/footerlogo.png"
+              alt=""
+              width={120}
+              height={40}
+              className="object-contain object-left-top"
+            />
+            <div className="mt-8 font-cabinet text-[16px] text-[#FFFFFF]">
+              <p className="font-bold">Address:</p>
+              <p className="font-normal">USA, California</p>
+            </div>
+            <div className="mt-6 font-cabinet text-[16px] text-[#FFFFFF]">
+              <p className="font-bold">Contact:</p>
+              <p className="font-normal">
+                <a href="tel:7202310000" className="font-normal font-[400] text-[#FFFFFF] underline hover:no-underline">720 231 xxxx</a>
+              </p>
+              <p className="font-normal">
+                <a href="mailto:kimjosh@usc.edu" className="font-normal font-[400] text-[#FFFFFF] underline hover:no-underline">kimjosh@usc.edu</a>
+              </p>
+            </div>
+            <div className="mt-6 flex items-center gap-3">
+              <a href="https://www.linkedin.com/in/joshkim-/" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
+                <Image src="/assets/Facebook.png" alt="" width={24} height={24} className="h-6 w-6 object-contain" />
               </a>
-              <a href="#" aria-label="X">
-                <SocialIcon className="h-5 w-5 text-neutral-400 hover:text-white" />
+              <a href="https://www.linkedin.com/in/joshkim-/" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+                <Image src="/assets/Instagram.png" alt="" width={24} height={24} className="h-6 w-6 object-contain" />
               </a>
-              <a href="#" aria-label="Instagram">
-                <SocialIcon className="h-5 w-5 text-neutral-400 hover:text-white" />
+              <a href="https://www.linkedin.com/in/joshkim-/" target="_blank" rel="noopener noreferrer" aria-label="X">
+                <Image src="/assets/X.png" alt="" width={24} height={24} className="h-6 w-6 object-contain" />
               </a>
-              <a href="#" aria-label="YouTube">
-                <SocialIcon className="h-5 w-5 text-neutral-400 hover:text-white" />
+              <a href="https://www.linkedin.com/in/joshkim-/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+                <Image src="/assets/LinkedIn.png" alt="" width={24} height={24} className="h-6 w-6 object-contain" />
+              </a>
+              <a href="https://www.linkedin.com/in/joshkim-/" target="_blank" rel="noopener noreferrer" aria-label="YouTube">
+                <Image src="/assets/Youtube.png" alt="" width={24} height={24} className="h-6 w-6 object-contain" />
               </a>
             </div>
           </div>
-          <p className="text-center text-sm text-neutral-400">© 2023. lavaria. All rights reserved.</p>
+          {/* Divider: full footer width with 144px room on left and right */}
+          <div
+            className="absolute left-[144px] right-[144px] h-px"
+            style={{ top: "345px", backgroundColor: "#F5F3EE" }}
+            aria-hidden
+          />
+          <p
+            className="absolute left-1/2 top-[379px] -translate-x-1/2 font-cabinet font-normal text-[#FFFFFF]"
+            style={{ fontSize: "14px", lineHeight: "150%" }}
+          >
+            © 2023 Joshua Kimothy. All rights reserved.
+          </p>
         </footer>
       </div>
     </div>

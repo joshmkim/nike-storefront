@@ -3,10 +3,19 @@
 import { StorefrontLayout } from "@/components/StorefrontLayout";
 import { supabase } from "@/lib/supabase";
 import { salePrice } from "@/types/database";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
-type CartItem = { shoe_id: string; size: string; quantity: number; msrp: number; sale_percent?: number };
+type CartItem = {
+  shoe_id: string;
+  size: string;
+  quantity: number;
+  msrp: number;
+  sale_percent?: number;
+  shoe_name?: string;
+  display_image?: string | null;
+};
 
 export default function CheckoutPage() {
   const router = useRouter();
@@ -101,146 +110,274 @@ export default function CheckoutPage() {
 
   return (
     <StorefrontLayout>
-      <div className="mx-auto max-w-[1280px] px-6 pb-16 pt-8">
-        <h1 className="font-cabinet text-2xl font-bold uppercase tracking-wide text-[#181818]">Checkout</h1>
+      <h1 className="font-cabinet text-2xl font-bold uppercase tracking-wide text-[#181818]">
+        Checkout
+      </h1>
 
-        <div className="mt-10 grid grid-cols-1 gap-12 lg:grid-cols-[1fr_380px]">
-          <div className="space-y-10">
-            <section className="rounded-lg border border-neutral-200 bg-white p-6">
-              <h2 className="font-cabinet text-lg font-bold uppercase tracking-wide text-[#181818]">Contact</h2>
-              <div className="mt-4">
-                <label htmlFor="checkout-email" className="block font-cabinet text-sm font-bold text-neutral-700">Email</label>
+      <div className="mt-8 flex flex-col gap-8 lg:flex-row lg:items-start lg:gap-12">
+        {/* Left: Contact & delivery + Payment */}
+        <div className="flex-1 space-y-10">
+          <section>
+            <h2 className="font-cabinet text-sm font-bold uppercase text-[#181818]">
+              Contact & delivery
+            </h2>
+            <div className="mt-6 space-y-5">
+              <div>
+                <label htmlFor="checkout-email" className="block font-cabinet text-sm font-bold uppercase text-neutral-600">
+                  Email
+                </label>
                 <input
                   id="checkout-email"
                   type="email"
                   placeholder="you@example.com"
-                  className="mt-1 w-full rounded border border-neutral-300 px-3 py-2 font-cabinet text-neutral-900 placeholder:text-neutral-400"
+                  className="mt-2 w-full border-0 border-b border-neutral-300 bg-transparent py-3 font-cabinet text-base text-[#181818] placeholder:text-neutral-400 focus:border-[#181818] focus:outline-none focus:ring-0"
                   aria-label="Email (optional)"
                 />
               </div>
-            </section>
-
-            <section className="rounded-lg border border-neutral-200 bg-white p-6">
-              <h2 className="font-cabinet text-lg font-bold uppercase tracking-wide text-[#181818]">Shipping address</h2>
-              <div className="mt-4 space-y-4">
+              <div>
+                <label htmlFor="checkout-name" className="block font-cabinet text-sm font-bold uppercase text-neutral-600">
+                  Full name
+                </label>
+                <input
+                  id="checkout-name"
+                  type="text"
+                  placeholder="First and last name"
+                  className="mt-2 w-full border-0 border-b border-neutral-300 bg-transparent py-3 font-cabinet text-base text-[#181818] placeholder:text-neutral-400 focus:border-[#181818] focus:outline-none focus:ring-0"
+                  aria-label="Full name (optional)"
+                />
+              </div>
+              <div>
+                <label htmlFor="checkout-address1" className="block font-cabinet text-sm font-bold uppercase text-neutral-600">
+                  Address
+                </label>
+                <input
+                  id="checkout-address1"
+                  type="text"
+                  placeholder="Street address"
+                  className="mt-2 w-full border-0 border-b border-neutral-300 bg-transparent py-3 font-cabinet text-base text-[#181818] placeholder:text-neutral-400 focus:border-[#181818] focus:outline-none focus:ring-0"
+                  aria-label="Address (optional)"
+                />
+              </div>
+              <input
+                type="text"
+                placeholder="Apartment, suite, etc. (optional)"
+                className="w-full border-0 border-b border-neutral-300 bg-transparent py-3 font-cabinet text-base text-[#181818] placeholder:text-neutral-400 focus:border-[#181818] focus:outline-none focus:ring-0"
+                aria-label="Address line 2 (optional)"
+              />
+              <div className="grid grid-cols-3 gap-4">
                 <div>
-                  <label htmlFor="checkout-name" className="block font-cabinet text-sm font-bold text-neutral-700">Full name</label>
-                  <input id="checkout-name" type="text" placeholder="First and last name" className="mt-1 w-full rounded border border-neutral-300 px-3 py-2 font-cabinet text-neutral-900 placeholder:text-neutral-400" aria-label="Full name (optional)" />
+                  <label htmlFor="checkout-city" className="block font-cabinet text-sm font-bold uppercase text-neutral-600">
+                    City
+                  </label>
+                  <input
+                    id="checkout-city"
+                    type="text"
+                    placeholder="City"
+                    className="mt-2 w-full border-0 border-b border-neutral-300 bg-transparent py-3 font-cabinet text-base text-[#181818] placeholder:text-neutral-400 focus:border-[#181818] focus:outline-none focus:ring-0"
+                    aria-label="City (optional)"
+                  />
                 </div>
                 <div>
-                  <label htmlFor="checkout-address1" className="block font-cabinet text-sm font-bold text-neutral-700">Address</label>
-                  <input id="checkout-address1" type="text" placeholder="Street address" className="mt-1 w-full rounded border border-neutral-300 px-3 py-2 font-cabinet text-neutral-900 placeholder:text-neutral-400" aria-label="Address (optional)" />
+                  <label htmlFor="checkout-state" className="block font-cabinet text-sm font-bold uppercase text-neutral-600">
+                    State
+                  </label>
+                  <input
+                    id="checkout-state"
+                    type="text"
+                    placeholder="State"
+                    className="mt-2 w-full border-0 border-b border-neutral-300 bg-transparent py-3 font-cabinet text-base text-[#181818] placeholder:text-neutral-400 focus:border-[#181818] focus:outline-none focus:ring-0"
+                    aria-label="State (optional)"
+                  />
                 </div>
                 <div>
-                  <input type="text" placeholder="Apartment, suite, etc. (optional)" className="w-full rounded border border-neutral-300 px-3 py-2 font-cabinet text-neutral-900 placeholder:text-neutral-400" aria-label="Address line 2 (optional)" />
-                </div>
-                <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
-                  <div>
-                    <label htmlFor="checkout-city" className="block font-cabinet text-sm font-bold text-neutral-700">City</label>
-                    <input id="checkout-city" type="text" placeholder="City" className="mt-1 w-full rounded border border-neutral-300 px-3 py-2 font-cabinet text-neutral-900 placeholder:text-neutral-400" aria-label="City (optional)" />
-                  </div>
-                  <div>
-                    <label htmlFor="checkout-state" className="block font-cabinet text-sm font-bold text-neutral-700">State</label>
-                    <input id="checkout-state" type="text" placeholder="State" className="mt-1 w-full rounded border border-neutral-300 px-3 py-2 font-cabinet text-neutral-900 placeholder:text-neutral-400" aria-label="State (optional)" />
-                  </div>
-                  <div>
-                    <label htmlFor="checkout-zip" className="block font-cabinet text-sm font-bold text-neutral-700">ZIP</label>
-                    <input id="checkout-zip" type="text" placeholder="ZIP" className="mt-1 w-full rounded border border-neutral-300 px-3 py-2 font-cabinet text-neutral-900 placeholder:text-neutral-400" aria-label="ZIP (optional)" />
-                  </div>
-                </div>
-                <div>
-                  <label htmlFor="checkout-country" className="block font-cabinet text-sm font-bold text-neutral-700">Country</label>
-                  <input id="checkout-country" type="text" placeholder="Country" className="mt-1 w-full rounded border border-neutral-300 px-3 py-2 font-cabinet text-neutral-900 placeholder:text-neutral-400" aria-label="Country (optional)" />
+                  <label htmlFor="checkout-zip" className="block font-cabinet text-sm font-bold uppercase text-neutral-600">
+                    ZIP
+                  </label>
+                  <input
+                    id="checkout-zip"
+                    type="text"
+                    placeholder="ZIP"
+                    className="mt-2 w-full border-0 border-b border-neutral-300 bg-transparent py-3 font-cabinet text-base text-[#181818] placeholder:text-neutral-400 focus:border-[#181818] focus:outline-none focus:ring-0"
+                    aria-label="ZIP (optional)"
+                  />
                 </div>
               </div>
-            </section>
+              <div>
+                <label htmlFor="checkout-country" className="block font-cabinet text-sm font-bold uppercase text-neutral-600">
+                  Country
+                </label>
+                <input
+                  id="checkout-country"
+                  type="text"
+                  placeholder="United States"
+                  className="mt-2 w-full border-0 border-b border-neutral-300 bg-transparent py-3 font-cabinet text-base text-[#181818] placeholder:text-neutral-400 focus:border-[#181818] focus:outline-none focus:ring-0"
+                  aria-label="Country (optional)"
+                />
+              </div>
+            </div>
+          </section>
 
-            <section className="rounded-lg border border-neutral-200 bg-white p-6">
-              <h2 className="font-cabinet text-lg font-bold uppercase tracking-wide text-[#181818]">Payment</h2>
-              <p className="mt-1 text-sm text-neutral-500">All transactions are secure. This form is for display only.</p>
-              <div className="mt-4 space-y-4">
+          <section>
+            <h2 className="font-cabinet text-sm font-bold uppercase text-[#181818]">
+              Payment
+            </h2>
+            <p className="mt-1 font-cabinet text-sm text-neutral-500">Secure payment. This form is for display only.</p>
+            <div className="mt-6 space-y-5">
+              <div>
+                <label htmlFor="checkout-card-name" className="block font-cabinet text-sm font-bold uppercase text-neutral-600">
+                  Name on card
+                </label>
+                <input
+                  id="checkout-card-name"
+                  type="text"
+                  placeholder="Name as it appears on card"
+                  className="mt-2 w-full border-0 border-b border-neutral-300 bg-transparent py-3 font-cabinet text-base text-[#181818] placeholder:text-neutral-400 focus:border-[#181818] focus:outline-none focus:ring-0"
+                  aria-label="Name on card (optional)"
+                />
+              </div>
+              <div>
+                <label htmlFor="checkout-card-number" className="block font-cabinet text-sm font-bold uppercase text-neutral-600">
+                  Card number
+                </label>
+                <input
+                  id="checkout-card-number"
+                  type="text"
+                  placeholder="1234 5678 9012 3456"
+                  className="mt-2 w-full border-0 border-b border-neutral-300 bg-transparent py-3 font-cabinet text-base text-[#181818] placeholder:text-neutral-400 focus:border-[#181818] focus:outline-none focus:ring-0"
+                  aria-label="Card number (optional)"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-6">
                 <div>
-                  <label htmlFor="checkout-card-name" className="block font-cabinet text-sm font-bold text-neutral-700">Name on card</label>
-                  <input id="checkout-card-name" type="text" placeholder="Name as it appears on card" className="mt-1 w-full rounded border border-neutral-300 px-3 py-2 font-cabinet text-neutral-900 placeholder:text-neutral-400" aria-label="Name on card (optional)" />
+                  <label htmlFor="checkout-expiry" className="block font-cabinet text-sm font-bold uppercase text-neutral-600">
+                    Expiry
+                  </label>
+                  <input
+                    id="checkout-expiry"
+                    type="text"
+                    placeholder="MM / YY"
+                    className="mt-2 w-full border-0 border-b border-neutral-300 bg-transparent py-3 font-cabinet text-base text-[#181818] placeholder:text-neutral-400 focus:border-[#181818] focus:outline-none focus:ring-0"
+                    aria-label="Expiry (optional)"
+                  />
                 </div>
                 <div>
-                  <label htmlFor="checkout-card-number" className="block font-cabinet text-sm font-bold text-neutral-700">Card number</label>
-                  <input id="checkout-card-number" type="text" placeholder="1234 5678 9012 3456" className="mt-1 w-full rounded border border-neutral-300 px-3 py-2 font-cabinet text-neutral-900 placeholder:text-neutral-400" aria-label="Card number (optional)" />
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label htmlFor="checkout-expiry" className="block font-cabinet text-sm font-bold text-neutral-700">Expiry</label>
-                    <input id="checkout-expiry" type="text" placeholder="MM / YY" className="mt-1 w-full rounded border border-neutral-300 px-3 py-2 font-cabinet text-neutral-900 placeholder:text-neutral-400" aria-label="Expiry (optional)" />
-                  </div>
-                  <div>
-                    <label htmlFor="checkout-cvv" className="block font-cabinet text-sm font-bold text-neutral-700">CVV</label>
-                    <input id="checkout-cvv" type="text" placeholder="123" className="mt-1 w-full rounded border border-neutral-300 px-3 py-2 font-cabinet text-neutral-900 placeholder:text-neutral-400" aria-label="CVV (optional)" />
-                  </div>
+                  <label htmlFor="checkout-cvv" className="block font-cabinet text-sm font-bold uppercase text-neutral-600">
+                    CVV
+                  </label>
+                  <input
+                    id="checkout-cvv"
+                    type="text"
+                    placeholder="123"
+                    className="mt-2 w-full border-0 border-b border-neutral-300 bg-transparent py-3 font-cabinet text-base text-[#181818] placeholder:text-neutral-400 focus:border-[#181818] focus:outline-none focus:ring-0"
+                    aria-label="CVV (optional)"
+                  />
                 </div>
               </div>
-            </section>
-          </div>
+            </div>
+          </section>
+        </div>
 
-          <div className="lg:sticky lg:top-8 lg:self-start">
-            <div className="rounded-lg border border-neutral-200 bg-white p-6">
-              <h2 className="font-cabinet text-lg font-bold uppercase tracking-wide text-[#181818]">Order summary</h2>
-              {cartLoading ? (
-                <p className="mt-2 text-sm text-neutral-500">Loading cart…</p>
-              ) : (
-                <>
-                  <div className="mt-4 space-y-2">
-                    <div className="flex justify-between text-sm">
-                      <span className="text-neutral-600">Subtotal</span>
-                      <span className="font-cabinet font-bold text-[#181818]">
-                        {new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", minimumFractionDigits: 2 }).format(subtotalCents / 100)}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-2 pt-2">
+        {/* Right: In your bag — same card style as cart summary */}
+        <div className="w-full shrink-0 lg:w-80">
+          <div className="rounded-lg border border-neutral-200 bg-white p-6">
+            <h2 className="font-cabinet text-sm font-bold uppercase text-neutral-600">
+              In your bag
+            </h2>
+            {cartLoading ? (
+              <p className="mt-6 font-cabinet text-sm text-neutral-500">Loading…</p>
+            ) : (
+              <>
+                <div className="mt-6 space-y-4 border-b border-neutral-200 pb-4">
+                  {cartItems.length === 0 ? (
+                    <p className="font-cabinet text-sm text-neutral-500">Your bag is empty.</p>
+                  ) : (
+                    cartItems.map((item) => {
+                      const unitCents = Math.round(salePrice(item.msrp, item.sale_percent ?? 0) * 100);
+                      const lineCents = unitCents * item.quantity;
+                      return (
+                        <div key={`${item.shoe_id}-${item.size}`} className="flex gap-4 border-b border-neutral-200 pb-4 last:border-0 last:pb-0">
+                          <div className="relative h-24 w-24 shrink-0 overflow-hidden bg-[#E9E9EB]">
+                            <Image
+                              src={item.display_image || "/assets/Sport Shoes.png"}
+                              alt=""
+                              fill
+                              className="object-contain"
+                              sizes="96px"
+                              unoptimized={(item.display_image ?? "").startsWith("/")}
+                            />
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <p className="font-cabinet font-bold text-[#181818] truncate">
+                              {item.shoe_name || "Product"}
+                            </p>
+                            <p className="mt-0.5 font-cabinet text-sm text-neutral-500">
+                              Size {item.size} · Qty {item.quantity}
+                            </p>
+                            <p className="mt-1 font-cabinet font-bold text-[#181818]">
+                              {new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", minimumFractionDigits: 0 }).format(lineCents / 100)}
+                            </p>
+                          </div>
+                        </div>
+                      );
+                    })
+                  )}
+                </div>
+                <div className="mt-4 space-y-4">
+                  <div className="flex justify-between font-cabinet text-sm">
+                    <span className="font-bold uppercase text-neutral-600">Subtotal</span>
+                    <span className="font-bold text-[#181818]">
+                      {new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", minimumFractionDigits: 2 }).format(subtotalCents / 100)}
+                    </span>
+                  </div>
+                  <div className="border-t border-neutral-200 pt-4">
+                    <label className="block font-cabinet text-sm font-bold uppercase text-neutral-600">
+                      Promo code
+                    </label>
+                    <div className="mt-2 flex gap-2">
                       <input
                         type="text"
                         value={discountInput}
                         onChange={(e) => setDiscountInput(e.target.value.toUpperCase())}
-                        placeholder="Discount code"
-                        className="flex-1 rounded border border-neutral-300 px-3 py-2 font-cabinet text-sm text-neutral-900 placeholder:text-neutral-400"
+                        placeholder="Enter code"
+                        className="flex-1 rounded-full border border-neutral-300 bg-white px-4 py-2.5 font-cabinet text-sm text-[#181818] placeholder:text-neutral-400 focus:border-[#181818] focus:outline-none focus:ring-1 focus:ring-[#181818]"
                         aria-label="Discount code"
                       />
                       <button
                         type="button"
                         onClick={handleApplyDiscount}
-                        className="shrink-0 rounded-full border-2 border-neutral-900 bg-transparent px-4 py-2 font-cabinet text-sm font-bold uppercase text-neutral-900 hover:bg-neutral-900 hover:text-white"
+                        className="shrink-0 rounded-full border border-neutral-300 bg-white px-4 py-2.5 font-cabinet text-sm font-bold uppercase text-[#181818] hover:bg-neutral-100"
                       >
                         Apply
                       </button>
                     </div>
-                    {discountError && <p className="text-sm text-red-600">{discountError}</p>}
+                    {discountError && <p className="mt-2 font-cabinet text-xs text-red-600">{discountError}</p>}
                     {appliedDiscount && (
-                      <div className="flex justify-between text-sm text-green-700">
-                        <span>Discount ({appliedDiscount.code})</span>
-                        <span className="font-cabinet font-bold">
+                      <div className="mt-3 flex justify-between font-cabinet text-sm text-green-700">
+                        <span className="font-bold">Discount ({appliedDiscount.code})</span>
+                        <span className="font-bold">
                           -{new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", minimumFractionDigits: 2 }).format(appliedDiscount.discount_amount_cents / 100)}
                         </span>
                       </div>
                     )}
-                    <div className="flex justify-between border-t border-neutral-200 pt-3 text-base">
-                      <span className="font-cabinet font-bold text-[#181818]">Total</span>
-                      <span className="font-cabinet font-bold text-[#181818]">
-                        {new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", minimumFractionDigits: 2 }).format(totalCents / 100)}
-                      </span>
-                    </div>
                   </div>
-                </>
-              )}
-              {error && <p className="mt-4 text-sm text-red-600">{error}</p>}
-              <button
-                type="button"
-                onClick={handleCheckout}
-                disabled={loading || cartLoading || cartItems.length === 0}
-                className="mt-6 w-full rounded-full bg-neutral-900 px-6 py-4 font-cabinet text-base font-bold uppercase text-white hover:opacity-90 disabled:opacity-50"
-              >
-                {loading ? "Processing…" : "Place order"}
-              </button>
-              <p className="mt-3 text-center text-xs text-neutral-500">Form fields above are optional and for display only.</p>
-            </div>
+                  <div className="flex justify-between border-t border-neutral-200 pt-4 font-cabinet">
+                    <span className="text-lg font-bold text-[#181818]">Total</span>
+                    <span className="text-lg font-bold text-[#181818]">
+                      {new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", minimumFractionDigits: 2 }).format(totalCents / 100)}
+                    </span>
+                  </div>
+                </div>
+                {error && <p className="mt-4 font-cabinet text-sm text-red-600">{error}</p>}
+                <button
+                  type="button"
+                  onClick={handleCheckout}
+                  disabled={loading || cartLoading || cartItems.length === 0}
+                  className="mt-6 w-full rounded-full bg-neutral-900 py-3 font-cabinet text-base font-bold uppercase text-white hover:opacity-90 disabled:opacity-50"
+                >
+                  {loading ? "Processing…" : "Place order"}
+                </button>
+              </>
+            )}
           </div>
         </div>
       </div>
